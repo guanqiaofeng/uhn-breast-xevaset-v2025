@@ -1,0 +1,47 @@
+name: UHN_Breast
+description: Curation of the UHN Breast PDX XevaSet (2026)
+
+directories:
+  rawdata: data/rawdata
+  procdata: data/procdata
+  results: data/results
+  logs: logs
+  scripts: workflow/scripts
+
+# Define the omics sources and targets
+omics:
+  rnaseq:
+    raw: omics/20251007_gene_tpm_normalized_matrix.csv
+    proc: rna_tpm_hugo.csv
+    datatype: RNASeq
+    assay_name: exprs
+  cnv:
+    raw: omics/20251121_cnv_matrix.tsv
+    proc: cnv_hugo.csv
+    datatype: cnv
+    assay_name: exprs
+  mutation:
+    raw: omics/cohort_20260217_gnomad0002_vaf04_alt5_updaterescue_allgermline.maf.oncokb.txt
+    proc: mutation_hugo.tsv
+    datatype: mutation
+    assay_name: exprs
+
+# define drug screen parameters
+drug_screen:
+  processing:
+    min_treatment_days: 14
+  update:
+    model_type: "parental"
+  curve_calculation:
+    tgi_window: 28 # Primary window for TGI/AUC (Days)
+    recist_window: 60 # Window for Best Response/mRECIST (Days)
+
+# Define treatment response parameters
+treatmentResponse:
+  control_drug: untreated (H2O)
+
+# Mapping information
+annotations:
+  genome_version: GRCh38
+  gene_info: additional/geneInfo.tab
+  # Add tissue or subtype maps here as you get them
