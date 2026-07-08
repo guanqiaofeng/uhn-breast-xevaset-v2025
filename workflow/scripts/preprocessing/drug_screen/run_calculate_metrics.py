@@ -50,7 +50,8 @@ def run_analysis(exp_path, design_path, out_batch, out_model, tgi_win, recist_wi
             cv0_candidates = c_full[c_full['time'] <= 3]
             if cv0_candidates.empty: continue
             cv0 = cv0_candidates.iloc[0]['volume']
-            
+            if pd.isna(cv0) or cv0 <= 0: continue
+
             res = calculate_mouse_metrics(c_full, cv0, tgi_win)
             if res: ctrl_metrics.append(res)
 
@@ -117,7 +118,9 @@ def run_analysis(exp_path, design_path, out_batch, out_model, tgi_win, recist_wi
                 
                 # Comparative Metrics (Nature Paper Focus)
                 'abc': mean_ctrl_auc - avg_trt_auc,
-                'angle': np.degrees(np.arctan(mean_ctrl_slope) - np.arctan(avg_trt_slope)),
+                # slope is already an angle in degrees (see calculate_mouse_metrics),
+                # so the batch angle is a plain difference, matching Xeva's angle()
+                'angle': mean_ctrl_slope - avg_trt_slope,
                 
                 # Internal Xeva Slots (Breakdown)
                 'auc.control': mean_ctrl_auc,

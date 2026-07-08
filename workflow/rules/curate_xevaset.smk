@@ -14,8 +14,8 @@ rule build_XevaSet:
         
         # 4. YOUR UPDATED METRICS (The Python Outputs)
         # We use your validated batch and model files here
-        batchMetrics = rules.calculate_drug_metrics.output.batch,
-        modelMetrics = rules.calculate_drug_metrics.output.model
+        # batchMetrics = rules.calculate_drug_metrics.output.batch,
+        # modelMetrics = rules.calculate_drug_metrics.output.model
     output:
         xeva = results / "UHN_Breast_XevaSet_v2025.rds",
         tsvDir = directory(results / "UHN_Breast_XevaSet_tsv")

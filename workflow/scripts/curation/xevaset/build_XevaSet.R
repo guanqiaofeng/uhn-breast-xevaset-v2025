@@ -102,12 +102,20 @@ message("💉 Injecting Python-calculated metrics...")
 
 # A. Model-level injection (mRECIST, etc.)
 # We must ensure the rownames match Xeva's expectation
-rownames(py_model_metrics) <- py_model_metrics$model.id
-slot(pdxe, "sensitivity")$model <- py_model_metrics
+# rownames(py_model_metrics) <- py_model_metrics$model.id
+# slot(pdxe, "sensitivity")$model <- py_model_metrics
+
+pdxe <- setResponse(pdxe, res.measure = "slope")
+pdxe <- setResponse(pdxe, res.measure = "AUC")
+pdxe <- setResponse(pdxe, res.measure = "angle")
+pdxe <- setResponse(pdxe, res.measure = "abc")
+pdxe <- setResponse(pdxe, res.measure = "mRECIST")
+pdxe <- setResponse(pdxe, res.measure = "TGI")  
+pdxe <- setResponse(pdxe, res.measure = "lmm") 
 
 # B. Batch-level injection (ABC, Angle, etc.)
-rownames(py_batch_metrics) <- py_batch_metrics$batch.name
-slot(pdxe, "sensitivity")$batch <- py_batch_metrics
+# rownames(py_batch_metrics) <- py_batch_metrics$batch.name
+# slot(pdxe, "sensitivity")$batch <- py_batch_metrics
 
 # --- 6. VALIDATION & SAVE ---
 final_counts <- table(slot(pdxe, "sensitivity")$batch$mRECIST)
@@ -115,6 +123,15 @@ message("\n✅ Final XevaSet mRECIST Summary:")
 print(final_counts)
 
 # Create directory if it doesn't exist and save
-dir_create(path_dir(output_xeva))
+results_dir <- path_dir(output_xeva)
+dir_create(results_dir)
+
+# Export the sensitivity tables actually stored in the XevaSet as CSV
+message("💾 Exporting model- and batch-level sensitivity tables...")
+model_sensitivity <- sensitivity(pdxe, type = "model")
+batch_sensitivity <- sensitivity(pdxe, type = "batch")
+fwrite(model_sensitivity, file.path(results_dir, "UHN_Breast_XevaSet_v2025_model_sensitivity.csv"))
+fwrite(batch_sensitivity, file.path(results_dir, "UHN_Breast_XevaSet_v2025_batch_sensitivity.csv"))
+
 saveRDS(pdxe, output_xeva)
 message("\n🚀 XevaSet successfully saved to: ", output_xeva)
